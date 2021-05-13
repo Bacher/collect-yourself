@@ -1,0 +1,22 @@
+.editor {
+  position: relative;
+  width: 600px;
+  margin: 16px;
+  cursor: crosshair;
+}
+
+.image {
+  width: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.point {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: -8px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.6);
+}

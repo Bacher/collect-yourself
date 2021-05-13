@@ -1,0 +1,48 @@
+.dropZone {
+  width: 100%;
+  height: 40px;
+  border: 1px dashed #999;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.fileList {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 16px;
+  gap: 8px;
+}
+
+.file {
+  padding: 4px 6px;
+  width: 80px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+
+  &:hover {
+    background: #eee;
+  }
+
+  &[data-active] {
+    background: #ddd;
+  }
+
+  &[data-done] {
+    border: 1px solid #000;
+  }
+}
+
+.imgPreview {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.fileName {
+  margin: 4px 0;
+  font-size: 0.875rem /* 14/16 */;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

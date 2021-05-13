@@ -5,3 +5,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+a,
+p,
+button,
+input,
+textarea {
+  all: unset;
+}
+
+input,
+button {
+  display: inline-block;
+}
+
+p,
+textarea {
+  display: block;
+}
+
+/*
+@media (prefers-reduced-motion: no-preference) {
+}
+ */

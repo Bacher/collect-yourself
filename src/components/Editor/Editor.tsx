@@ -12,6 +12,8 @@ type Box = {
   height: number;
 };
 
+const BETWEEN_POINTS = 30;
+
 function getVector(point1: Point, point2: Point) {
   return {
     x: point2.x - point1.x,
@@ -24,15 +26,23 @@ function getRealDistance(point1: Point, point2: Point, box: Box) {
   return Math.sqrt((x * box.width) ** 2 + (y * box.height) ** 2);
 }
 
+function mulVector(vector: Point, mul: number) {
+  return {
+    x: vector.x * mul,
+    y: vector.y * mul,
+  };
+}
+
 type Props = {
   url: string;
+  initialLine?: [Point, Point];
   onLineDone: (line: [Point, Point]) => void;
 };
 
-export function Editor({url, onLineDone}: Props) {
+export function Editor({url, initialLine, onLineDone}: Props) {
   const [enabled, setEnabled] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<Point | undefined>();
-  const [points, setPoints] = useState<Point[]>([]);
+  const [points, setPoints] = useState<Point[]>(initialLine ?? []);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const convertToPoint = useCallback((e: MouseEvent) => {
@@ -49,14 +59,19 @@ export function Editor({url, onLineDone}: Props) {
       return points;
     }
 
-    const box = wrapperRef.current!.getBoundingClientRect();
+    if (!wrapperRef.current) {
+      return [];
+    }
+
+    const box = wrapperRef.current.getBoundingClientRect();
 
     const [p1] = points;
     const p2 = points[1] || hoverPoint;
 
     const vector = getVector(p1, p2);
     const distance = getRealDistance(p1, p2, box);
-    const count = Math.floor(distance / 30);
+    const deltaVector = mulVector(vector, BETWEEN_POINTS / distance);
+    const count = Math.ceil(distance / BETWEEN_POINTS);
 
     if (count === 0) {
       return points;
@@ -67,14 +82,14 @@ export function Editor({url, onLineDone}: Props) {
       ...Array.from({
         length: count - 1,
       }).map((_, i) => {
-        const delta = (i + 1) / count;
+        const delta = i + 1;
         return {
-          x: p1.x + vector.x * delta,
-          y: p1.y + vector.y * delta,
+          x: p1.x + deltaVector.x * delta,
+          y: p1.y + deltaVector.y * delta,
         };
       }),
     ];
-  }, [points, hoverPoint]);
+  }, [points, hoverPoint, wrapperRef.current]);
 
   let drawPoints = linePoints;
 

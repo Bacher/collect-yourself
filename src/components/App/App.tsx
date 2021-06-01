@@ -59,7 +59,6 @@ export function App() {
             className={styles.file}
             type="button"
             data-active={i === selectedImageIndex || undefined}
-            data-done={Boolean(line) || undefined}
             onClick={(e) => {
               e.preventDefault();
               setImageIndex(i);
@@ -67,13 +66,19 @@ export function App() {
           >
             <img src={blobUrl} alt={styles.fileName} className={styles.imgPreview} />
             <p className={styles.fileName}>{fileName}</p>
+            {line ? <span className={styles.done}>&#10003;</span> : null}
           </button>
         ))}
+        <div {...getRootProps()} className={styles.dropZone}>
+          <input {...getInputProps()} />
+          <span className={styles.addFile}>+</span>
+        </div>
       </div>
       {selectedImageIndex !== undefined && (
         <Editor
           key={files[selectedImageIndex].blobUrl}
           url={files[selectedImageIndex].blobUrl}
+          initialLine={files[selectedImageIndex].line}
           onLineDone={(line) => {
             setFiles(
               files.map((file, i) => {
@@ -90,10 +95,6 @@ export function App() {
           }}
         />
       )}
-      <div {...getRootProps()} className={styles.dropZone}>
-        <input {...getInputProps()} />
-        {isDragActive && 'active'}
-      </div>
     </div>
   );
 }

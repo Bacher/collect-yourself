@@ -4,6 +4,7 @@ import {useDropzone} from 'react-dropzone';
 import styles from './App.module.scss';
 import type {Point} from '../../types';
 import {Editor} from '../Editor';
+import {Combiner} from '../Combiner';
 
 export function App() {
   const [files, setFiles] = useState<
@@ -74,27 +75,37 @@ export function App() {
           <span className={styles.addFile}>+</span>
         </div>
       </div>
-      {selectedImageIndex !== undefined && (
-        <Editor
-          key={files[selectedImageIndex].blobUrl}
-          url={files[selectedImageIndex].blobUrl}
-          initialLine={files[selectedImageIndex].line}
-          onLineDone={(line) => {
-            setFiles(
-              files.map((file, i) => {
-                if (i === selectedImageIndex) {
-                  return {
-                    ...file,
-                    line,
-                  };
-                }
+      <div className={styles.main}>
+        {selectedImageIndex !== undefined && (
+          <Editor
+            key={files[selectedImageIndex].blobUrl}
+            url={files[selectedImageIndex].blobUrl}
+            initialLine={files[selectedImageIndex].line}
+            onLineDone={(line) => {
+              setFiles(
+                files.map((file, i) => {
+                  if (i === selectedImageIndex) {
+                    return {
+                      ...file,
+                      line,
+                    };
+                  }
 
-                return file;
-              }),
-            );
-          }}
-        />
-      )}
+                  return file;
+                }),
+              );
+            }}
+          />
+        )}
+        {files.length && files.every((f) => f.line) ? (
+          <Combiner
+            files={files.map(({file, line}) => ({
+              file,
+              line: line!,
+            }))}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

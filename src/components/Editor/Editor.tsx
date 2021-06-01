@@ -2,36 +2,13 @@ import React, {MouseEvent, useCallback, useEffect, useMemo, useRef, useState} fr
 
 import {Point} from '../../types';
 import styles from './Editor.module.scss';
+import {getRealDistance, getVector, mulVector} from '../../utils/vector';
 
 function isValid(point: Point) {
   return point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1;
 }
 
-type Box = {
-  width: number;
-  height: number;
-};
-
 const BETWEEN_POINTS = 30;
-
-function getVector(point1: Point, point2: Point) {
-  return {
-    x: point2.x - point1.x,
-    y: point2.y - point1.y,
-  };
-}
-
-function getRealDistance(point1: Point, point2: Point, box: Box) {
-  const {x, y} = getVector(point1, point2);
-  return Math.sqrt((x * box.width) ** 2 + (y * box.height) ** 2);
-}
-
-function mulVector(vector: Point, mul: number) {
-  return {
-    x: vector.x * mul,
-    y: vector.y * mul,
-  };
-}
 
 type Props = {
   url: string;

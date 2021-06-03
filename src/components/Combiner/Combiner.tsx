@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react';
 
 import type {Box, Point} from '../../types';
-import {getRealDistance, getVector, mulVector} from '../../utils/vector';
+import {getNormalizedVector, getRealDistance, getVector, mulVector} from '../../utils/vector';
 import styles from './Combiner.module.scss';
 
 type Props = {
@@ -15,7 +15,7 @@ const WIDTH = 500;
 const HEIGHT = 800;
 
 function getSlope(line: [Point, Point], {width, height}: Box) {
-  const vec0 = getVector(...line);
+  const vec0 = getNormalizedVector(...line);
   const vec = {x: vec0.x * width, y: vec0.y * height};
   const angle = Math.atan2(vec.y * -1, vec.x);
   return Math.PI / 2 - angle;
@@ -65,12 +65,9 @@ export function Combiner({files}: Props) {
       const ratio = 100 / WIDTH;
 
       images.forEach(({imageCanvas, line}, i) => {
-        const {width, height} = imageCanvas;
-
-        const angle = getSlope(line, {width, height});
+        const {width} = imageCanvas;
 
         ctx.save();
-        ctx.rotate(angle);
         const sx = 0;
         const sy = i * 100;
         const sw = width;

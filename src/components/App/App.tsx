@@ -1,10 +1,11 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 
 import styles from './App.module.scss';
 import type {Point} from '../../types';
 import {Editor} from '../Editor';
 import {Combiner} from '../Combiner';
+import {loadLinesFromStorage, saveLineToStorage} from '../../utils/storage';
 
 export function App() {
   const [files, setFiles] = useState<
@@ -19,6 +20,8 @@ export function App() {
 
   const [selectedImageIndex, setImageIndex] = useState<number>();
 
+  const linesState = useMemo(() => loadLinesFromStorage(), []);
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const images = acceptedFiles
@@ -31,6 +34,7 @@ export function App() {
             fileName: file.name,
             blob,
             blobUrl: URL.createObjectURL(blob),
+            line: linesState[file.name] || undefined,
           };
         });
 
@@ -85,6 +89,8 @@ export function App() {
               setFiles(
                 files.map((file, i) => {
                   if (i === selectedImageIndex) {
+                    saveLineToStorage(file.fileName, line);
+
                     return {
                       ...file,
                       line,

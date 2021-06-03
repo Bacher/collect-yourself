@@ -20,10 +20,10 @@ export function Editor({url, initialLine, onLineDone}: Props) {
   const [enabled, setEnabled] = useState(false);
   const [hoverPoint, setHoverPoint] = useState<Point | undefined>();
   const [points, setPoints] = useState<Point[]>(initialLine ?? []);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const convertToPoint = useCallback((e: MouseEvent) => {
-    const box = wrapperRef.current!.getBoundingClientRect();
+    const box = imgRef.current!.getBoundingClientRect();
 
     return {
       x: (e.clientX - box.left) / box.width,
@@ -36,11 +36,11 @@ export function Editor({url, initialLine, onLineDone}: Props) {
       return points;
     }
 
-    if (!wrapperRef.current) {
+    if (!imgRef.current) {
       return [];
     }
 
-    const box = wrapperRef.current.getBoundingClientRect();
+    const box = imgRef.current.getBoundingClientRect();
 
     const [p1] = points;
     const p2 = points[1] || hoverPoint;
@@ -66,7 +66,7 @@ export function Editor({url, initialLine, onLineDone}: Props) {
         };
       }),
     ];
-  }, [points, hoverPoint, wrapperRef.current]);
+  }, [points, hoverPoint, imgRef.current]);
 
   let drawPoints = linePoints;
 
@@ -75,58 +75,60 @@ export function Editor({url, initialLine, onLineDone}: Props) {
   }
 
   return (
-    <div
-      ref={wrapperRef}
-      className={styles.editor}
-      onMouseDown={
-        enabled
-          ? (e) => {
-              setPoints([convertToPoint(e)]);
-            }
-          : undefined
-      }
-      onMouseMove={
-        enabled && points.length < 2
-          ? (e) => {
-              setHoverPoint(convertToPoint(e));
-            }
-          : undefined
-      }
-      onMouseUp={
-        enabled
-          ? (e) => {
-              setHoverPoint(undefined);
-
-              const point = convertToPoint(e);
-
-              if (isValid(point)) {
-                const updatedPoints = [...points, point];
-                setPoints(updatedPoints);
-                onLineDone([points[0], point]);
-              } else {
-                setPoints([]);
+    <div className={styles.editor}>
+      <div
+        className={styles.imageWrapper}
+        onMouseDown={
+          enabled
+            ? (e) => {
+                setPoints([convertToPoint(e)]);
               }
-            }
-          : undefined
-      }
-    >
-      <img
-        src={url}
-        className={styles.image}
-        onLoad={() => {
-          setEnabled(true);
-        }}
-      />
-      {drawPoints.map(({x, y}, i) => (
-        <span
-          key={i}
-          className={styles.point}
-          style={{
-            top: `${y * 100}%`,
-            left: `${x * 100}%`,
+            : undefined
+        }
+        onMouseMove={
+          enabled && points.length < 2
+            ? (e) => {
+                setHoverPoint(convertToPoint(e));
+              }
+            : undefined
+        }
+        onMouseUp={
+          enabled
+            ? (e) => {
+                setHoverPoint(undefined);
+
+                const point = convertToPoint(e);
+
+                if (isValid(point)) {
+                  const updatedPoints = [...points, point];
+                  setPoints(updatedPoints);
+                  onLineDone([points[0], point]);
+                } else {
+                  setPoints([]);
+                }
+              }
+            : undefined
+        }
+      >
+        <img
+          src={url}
+          className={styles.image}
+          onLoad={() => {
+            setEnabled(true);
           }}
+          ref={imgRef}
         />
-      ))}
+        {drawPoints.map(({x, y}, i) => (
+          <span
+            key={i}
+            className={styles.point}
+            style={{
+              top: `${y * 100}%`,
+              left: `${x * 100}%`,
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
